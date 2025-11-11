@@ -1,0 +1,8 @@
+create new folder
+(and check)
+>>docker --version
+>> kubectl version --client
+
+if minikube is not there 
+Invoke-WebRequest -Uri "https://storage.googleapis.com/minikube/releases/latest/minikube-installer.exe" -OutFile "minikube-installer.exe"
+Start-Process .\minikube-installer.exe -Wait
