@@ -1,0 +1,14 @@
+#dockerfile
+FROM nginx
+COPY index.html /usr/share/nginx/html/index.html
+
+#index.html
+give some code
+
+commands:
+
+docker –version
+docker run hello-world
+mkdir docker-demo
+docker build -t myweb:v1 .
+docker run -d -p 8080:80 myweb:v1
