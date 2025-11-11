@@ -1,0 +1,114 @@
+#app.py
+from flask import Flask, render_template
+app = Flask(__name__)
+@app.route('/')
+def home():
+ return render_template('index.html')
+if __name__ == '__main__':
+ app.run(host='0.0.0.0', port=5050)
+
+ ------------------------------------------
+ #templates/index.html
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>My Kubernetes Flask App</title>
+<style>
+body { 
+    font-family: Arial, sans-serif; 
+    text-align: center; 
+    background-color: #f0f8ff; 
+}
+h1 { 
+    color: #a6a0e0; 
+}
+p { 
+    font-size: 18px; 
+    color: #4f3232; 
+}
+.box { 
+    margin: 50px auto; 
+    padding: 20px; 
+    border: 2px solid #0f4aa2; 
+    width: 50%; 
+    border-radius: 10px; 
+    background-color: #e0f7fa; 
+}
+</style>
+</head>
+<body>
+<div class="box">
+    <h1>Flask Application</h1>
+    <p>Using Docker, MiniKube and Flask</p>
+</div>
+</body>
+</html>
+----------------------------------------
+#requirements.txt
+flask
+-----------------------
+#dockerfile
+FROM python:3.9-slim
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+COPY app.py .
+COPY templates/ ./templates/
+EXPOSE 5050
+CMD ["python", "app.py"]
+-------------------------------------
+commands:
+docker build -t yourname/flaskimage:1.0 .
+docker run -p 5000:5000 yourname/flaskimage:1.0
+docker login
+docker push username/flaskimage:1.0(incase if it doesnt work use this and change the name-> docker tag pavana/flaskimage:1.0 pavanasandhya/flaskimage:1.0
+ )
+ -----------------------------
+#nginx-pod.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-pod
+  labels:
+    app: nginx
+
+spec:
+  containers:
+    - name: nginx
+      image: nginx:latest
+      ports:
+        - containerPort: 80
+--------------------------------------
+minikube start
+kubectl config use-context minikube
+kubectl config use-context docker-desktop
+kubectl cluster-info
+kubectl apply -f nginx-pod.yaml
+kubectl get pods
+kubectl describe pod nginx-pod
+kubectl port-forward pod/nginx-pod 8080:80
+Then open http://localhost:8080 in your browser.
+When done, delete the pod:
+kubectl delete pod nginx-pod
+----------------------------------
+kubectl create deployment my-nginx --image=nginx
+kubectl get deployments
+kubectl get pods -l app=my-nginx
+kubectl scale deployment my-nginx --replicas=3
+kubectl get pods
+kubectl set image deployment/my-nginx nginx=nginx:1.25
+kubectl rollout status deployment/my-nginx
+kubectl rollout undo deployment/my-nginx
+----------------------------------------
+kubectl expose deployment my-nginx --type=NodePort --port=80
+kubectl get svc
+minikube service my-nginx --url
+kubectl delete svc my-nginx
+kubectl delete deployment my-nginx
+kubectl delete svc my-nginx
+kubectl delete all --all -n default
+---------------------------------------
+minikube stop
+minikube delete
+
