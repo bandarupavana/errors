@@ -1,8 +1,102 @@
 create new folder
 (and check)
 >>docker --version
->> kubectl version --client
+>>kubectl version --client
+>>minikube version
 
-if minikube is not there 
-Invoke-WebRequest -Uri "https://storage.googleapis.com/minikube/releases/latest/minikube-installer.exe" -OutFile "minikube-installer.exe"
-Start-Process .\minikube-installer.exe -Wait
+{ if docker is not avail {Admin PowerShell}
+
+# Download Docker Desktop installer
+Invoke-WebRequest -Uri "https://desktop.docker.com/win/main/amd64/Docker%20Desktop%20Installer.exe" -OutFile "$env:USERPROFILE\Downloads\DockerDesktopInstaller.exe"
+
+# Start installation (will open GUI)
+Start-Process "$env:USERPROFILE\Downloads\DockerDesktopInstaller.exe" -Wait
+
+# Restart your computer after installation
+
+}
+
+{ if kubectl is not avail {Admin PowerShell}
+
+# Download latest kubectl
+Invoke-WebRequest -Uri "https://dl.k8s.io/release/v1.30.0/bin/windows/amd64/kubectl.exe" -OutFile "$env:USERPROFILE\kubectl.exe"
+
+# Add kubectl to PATH temporarily for this session
+$env:Path += ";$env:USERPROFILE"
+
+# OR move to a permanent folder in PATH
+Move-Item "$env:USERPROFILE\kubectl.exe" "C:\Windows\System32\kubectl.exe"
+
+}
+if minikube is not there (powershell in admin)
+>>Invoke-WebRequest -Uri "https://storage.googleapis.com/minikube/releases/latest/minikube-installer.exe" -OutFile "$env:USERPROFILE\Downloads\minikube-installer.exe"
+>>Start-Process "$env:USERPROFILE\Downloads\minikube-installer.exe" -Wait
+optional if version is not cmg  (minikube start --driver=docker)
+>>minikube version (close and open vs code)
+
+#nginx-pod.yaml
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-pod
+  labels:
+    app: nginx
+spec:
+  containers:
+    - name: nginx
+      image: nginx:latest
+      ports:
+        - containerPort: 80
+---------------------------------------
+kubectl apply -f nginx-pod.yaml
+kubectl get pods
+
+kubectl describe pod nginx-pod
+kubectl port-forward pod/nginx-pod 8080:80       or 9090:80
+[open http://localhost:8080]
+kubectl delete pod nginx-pod
+
+#Deployment and Scaling
+#Create a deployment:
+kubectl create deployment my-nginx --image=nginx
+
+#Check deployments and pods:
+kubectl get deployments
+kubectl get pods -l app=my-nginx
+
+#Scale to 3 replicas:
+kubectl scale deployment my-nginx --replicas=3
+kubectl get pods
+
+#Update the image (rolling update):
+kubectl set image deployment/my-nginx nginx=nginx:1.25
+kubectl rollout status deployment/my-nginx
+
+#If something goes wrong, rollback:
+kubectl rollout undo deployment/my-nginx
+
+#Expose Deployment as a Service
+#Expose the deployment using a NodePort service:
+kubectl expose deployment my-nginx --type=NodePort --port=80
+kubectl get svc
+
+#Get the URL of your app using Minikube:
+minikube service my-nginx --url
+
+#Open the displayed URL in your browser.
+#To remove the service:
+kubectl delete svc my-nginx
+
+#Cleanup
+#After the lab, clean up all created resources:
+kubectl delete deployment my-nginx
+kubectl delete svc my-nginx
+kubectl delete all --all -n default
+
+#If you want to stop or delete the cluster:
+minikube stop
+minikube delete
+
+
+
