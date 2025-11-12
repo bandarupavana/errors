@@ -4,6 +4,40 @@ COPY index.html /usr/share/nginx/html/index.html
 
 #index.html
 give some code
+(or)
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Hello Docker</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #e6f2ff;
+      text-align: center;
+      padding-top: 100px;
+    }
+    h1 {
+      color: #0077b6;
+      font-size: 50px;
+      text-shadow: 2px 2px #bde0fe;
+    }
+    p {
+      color: #03045e;
+      font-size: 20px;
+      font-weight: bold;
+    }
+    span {
+      color: #ff6b6b;
+    }
+  </style>
+</head>
+<body>
+  <h1>Hello <span>Docker!</span> 🐳</h1>
+  <p>Docker helps you <span>build, ship, and run</span> applications easily across environments.</p>
+</body>
+</html>
+
 
 commands:
 
